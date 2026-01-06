@@ -1,4 +1,4 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 // Demo Mode Helpers (Local Storage Persistence)
 const getLocalBookings = () => JSON.parse(localStorage.getItem('pb_bookings') || '[]');
@@ -41,33 +41,11 @@ const saveLocalBooking = (booking) => {
   localStorage.setItem('pb_bookings', JSON.stringify(bookings));
 };
 
-// Helper to safely access env vars (prevents crash in static non-Vite deployments)
-const getEnv = (key) => {
-  try {
-    return import.meta.env && import.meta.env[key];
-  } catch (e) {
-    return undefined;
-  }
-};
-
-// Initialize Supabase
-const SUPABASE_URL = getEnv('VITE_SUPABASE_URL');
-const SUPABASE_ANON_KEY = getEnv('VITE_SUPABASE_ANON_KEY');
-const isDemoMode = !SUPABASE_URL || SUPABASE_URL === 'undefined';
-
+// Force Demo Mode
+const isDemoMode = true;
 let supabase = null;
-if (!isDemoMode && SUPABASE_URL && SUPABASE_ANON_KEY) {
-  try {
-    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  } catch (e) {
-    console.warn('Failed to initialize Supabase, falling back to Demo Mode', e);
-    isDemoMode = true; // Fallback
-    seedMockData();
-  }
-} else {
-  // Check if we need to seed data for demo
-  seedMockData();
-}
+
+seedMockData();
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Pickleball Central - Ready to serve!');

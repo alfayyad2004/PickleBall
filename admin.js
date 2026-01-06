@@ -1,31 +1,9 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 // Configuration
-// Helper to safely access env vars (prevents crash in static non-Vite deployments)
-const getEnv = (key) => {
-    try {
-        return import.meta.env && import.meta.env[key];
-    } catch (e) {
-        return undefined;
-    }
-};
-
-// Configuration
-const SUPABASE_URL = getEnv('VITE_SUPABASE_URL');
-const SUPABASE_ANON_KEY = getEnv('VITE_SUPABASE_ANON_KEY');
-
-// Initialize Supabase (Dynamic based on keys)
+// Force Demo Mode for Static Deployment
+const isDemoMode = true;
 let supabase = null;
-let isDemoMode = !SUPABASE_URL || SUPABASE_URL === 'undefined';
-
-if (!isDemoMode) {
-    try {
-        supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (e) {
-        console.warn('Failed to initialize Supabase, falling back to Demo Mode', e);
-        isDemoMode = true;
-    }
-}
 
 // Demo Mode Helpers
 const getLocalBookings = () => JSON.parse(localStorage.getItem('pb_bookings') || '[]');
@@ -92,9 +70,15 @@ const loginError = document.getElementById('login-error');
 document.addEventListener('DOMContentLoaded', async () => {
     checkUser();
 
-    loginForm.addEventListener('submit', handleLogin);
-    logoutBtn.addEventListener('click', handleLogout);
-    filterDateInput.addEventListener('change', () => fetchBookings(filterDateInput.value));
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    if (filterDateInput) {
+        filterDateInput.addEventListener('change', () => fetchBookings(filterDateInput.value));
+    }
 });
 
 // Auth Functions
@@ -107,10 +91,6 @@ async function checkUser() {
         }
         return;
     }
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) showDashboard();
-    else showAuth();
 }
 
 async function handleLogin(e) {
@@ -120,20 +100,13 @@ async function handleLogin(e) {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    if (isDemoMode) {
-        // Mock Admin Auth
-        if (email === 'admin@pickleball.com' && password === 'pickleball2026') {
-            sessionStorage.setItem('demo_session', 'true');
-            showDashboard();
-        } else {
-            loginError.textContent = 'Invalid credentials for Demo Mode (Use admin@pickleball.com / pickleball2026)';
-        }
-        return;
+    // Mock Admin Auth
+    if (email === 'admin@pickleball.com' && password === 'pickleball2026') {
+        sessionStorage.setItem('demo_session', 'true');
+        showDashboard();
+    } else {
+        loginError.textContent = 'Invalid credentials for Demo Mode (Use admin@pickleball.com / pickleball2026)';
     }
-
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) loginError.textContent = error.message;
-    else showDashboard();
 }
 
 async function handleLogout() {
