@@ -19,7 +19,6 @@
 /* Page Wrapper for Desktop alignment */
 #dashboard-view,
 #auth-view {
-    /* Container class on main already handles max-width and margin */
     width: 100%;
 }
 
