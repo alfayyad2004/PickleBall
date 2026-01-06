@@ -1,0 +1,19 @@
+{
+  "name": "pickleball-central",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "resend": "^2.0.0",
+    "lucide": "^0.294.0"
+  }
+}

@@ -1,0 +1,163 @@
+/* Admin Dashboard Styles */
+.admin-body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+}
+
+.admin-header {
+    background: rgba(21, 27, 39, 0.95);
+    border-bottom: 1px solid rgba(217, 253, 17, 0.1);
+    padding: 15px 0;
+    margin-bottom: 40px;
+}
+
+.admin-badge {
+    color: var(--color-primary);
+    font-size: 0.65rem;
+    background: rgba(217, 253, 17, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* Auth Section */
+.auth-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 40px;
+}
+
+.auth-container h2 {
+    margin-bottom: 10px;
+    color: var(--color-primary);
+}
+
+.auth-container p {
+    color: var(--color-text-muted);
+    margin-bottom: 30px;
+}
+
+/* Dashboard Section */
+.dashboard-header {
+    margin-bottom: 30px;
+    align-items: flex-end;
+}
+
+.dashboard-header h1 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    color: var(--color-text-muted);
+}
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    padding: 10px 15px;
+    color: white;
+    font-family: var(--font-main);
+    margin-right: 10px;
+}
+
+/* Bookings Table */
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+}
+
+.bookings-table th {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-primary);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.bookings-table td {
+    padding: 20px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.95rem;
+}
+
+.bookings-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.customer-info {
+    font-weight: 600;
+    display: block;
+}
+
+.customer-email {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.players-badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn-icon.delete:hover {
+    background: #ff4757;
+    color: white;
+}
+
+.error-text {
+    color: #ff4757;
+    font-size: 0.875rem;
+    margin-top: 15px;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+.text-center {
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+}
