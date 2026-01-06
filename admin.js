@@ -14,10 +14,54 @@ if (!isDemoMode) {
 
 // Demo Mode Helpers
 const getLocalBookings = () => JSON.parse(localStorage.getItem('pb_bookings') || '[]');
+
+const seedMockData = () => {
+    const existing = getLocalBookings();
+    if (existing.length > 0) return;
+
+    const today = new Date();
+    const mockBookings = [];
+
+    // Day 1 (Today): 3 slots filled
+    const dateToday = today.toISOString().split('T')[0];
+    mockBookings.push(
+        { id: 'm1', booking_date: dateToday, time_slot: '4:00 PM - 5:15 PM', customer_name: 'John Doe', customer_email: 'john@example.com', customer_phone: '868-555-0123', players_count: 4, manage_token: 't1' },
+        { id: 'm2', booking_date: dateToday, time_slot: '5:15 PM - 6:30 PM', customer_name: 'Sarah Smith', customer_email: 'sarah@example.com', customer_phone: '868-555-0000', players_count: 2, manage_token: 't2' },
+        { id: 'm3', booking_date: dateToday, time_slot: '6:30 PM - 7:45 PM', customer_name: 'Mike Wilson', customer_email: 'mike@example.com', customer_phone: '868-555-4444', players_count: 4, manage_token: 't3' }
+    );
+
+    // Day 2 (Tomorrow): 1 slot filled
+    const dateTomorrow = new Date(today.getTime() + 86400000).toISOString().split('T')[0];
+    mockBookings.push(
+        { id: 'm4', booking_date: dateTomorrow, time_slot: '7:45 PM - 9:00 PM', customer_name: 'Jane Smith', customer_email: 'jane@example.com', customer_phone: '868-555-5555', players_count: 5, manage_token: 't4' }
+    );
+
+    // Day 3 (Next Day): Fully Booked (4 slots for demo purposes)
+    const dateDay3 = new Date(today.getTime() + 172800000).toISOString().split('T')[0];
+    const slots = ['4:00 PM - 5:15 PM', '5:15 PM - 6:30 PM', '6:30 PM - 7:45 PM', '7:45 PM - 9:00 PM'];
+    slots.forEach((s, i) => {
+        mockBookings.push({
+            id: `m-full-${i}`,
+            booking_date: dateDay3,
+            time_slot: s,
+            customer_name: `Full Day User ${i + 1}`,
+            customer_email: `full${i + 1}@example.com`,
+            customer_phone: '868-000-0000',
+            players_count: 4,
+            manage_token: `tf-${i}`
+        });
+    });
+
+    localStorage.setItem('pb_bookings', JSON.stringify(mockBookings));
+};
+
 const deleteLocalBooking = (id) => {
     const bookings = getLocalBookings().filter(b => b.id !== id && b.manage_token !== id);
     localStorage.setItem('pb_bookings', JSON.stringify(bookings));
 };
+
+// Seed if in demo mode
+if (isDemoMode) seedMockData();
 
 // DOM Elements
 const authView = document.getElementById('auth-view');
@@ -144,14 +188,17 @@ function renderBookings(bookings) {
 
     bookingsList.innerHTML = bookings.map(booking => `
         <tr class="animate-fade-in">
-            <td>${new Date(booking.booking_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+            <td>
+                <div style="font-weight: 700; color: var(--color-primary);">${new Date(booking.booking_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</div>
+                <div style="font-size: 0.8rem; color: var(--color-text-muted);">${new Date(booking.booking_date).getFullYear()}</div>
+            </td>
             <td>${booking.time_slot}</td>
             <td>
                 <span class="customer-info">${booking.customer_name}</span>
                 <span class="customer-email">${booking.customer_email}</span>
             </td>
             <td><span class="players-badge">${booking.players_count} Players</span></td>
-            <td>${booking.customer_phone}</td>
+            <td><span class="status-badge status-confirmed">Confirmed</span></td>
             <td class="actions-cell">
                 <button class="btn-icon" onclick="editBooking('${booking.id}')" title="Edit">✏️</button>
                 <button class="btn-icon delete" onclick="deleteBooking('${booking.id}')" title="Delete">🗑️</button>
@@ -162,8 +209,30 @@ function renderBookings(bookings) {
 
 function updateStats(bookings) {
     const totalPlayers = bookings.reduce((sum, b) => sum + b.players_count, 0);
-    statsSummary.textContent = `${bookings.length} active bookings | ${totalPlayers} total players`;
+    const revenue = totalPlayers * 40;
+
+    document.getElementById('stat-total-bookings').textContent = bookings.length;
+    document.getElementById('stat-total-players').textContent = totalPlayers;
+    document.getElementById('stat-revenue').textContent = `$${revenue} TTD`;
+
+    statsSummary.textContent = `Displaying ${bookings.length} reservations for the selected period.`;
+
+    if (isDemoMode) {
+        document.getElementById('clear-data-btn').style.display = 'inline-block';
+    }
 }
+
+window.clearAllData = () => {
+    if (confirm('Are you sure you want to clear all demo data? This cannot be undone.')) {
+        localStorage.removeItem('pb_bookings');
+        window.location.reload();
+    }
+};
+
+window.exportData = () => {
+    const bookings = isDemoMode ? getLocalBookings() : []; // CSV export logic would go here
+    alert('Exporting to CSV... (This would normally download a file)');
+};
 
 // Global functions for inline handlers
 window.deleteBooking = async (id) => {

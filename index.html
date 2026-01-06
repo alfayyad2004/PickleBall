@@ -24,11 +24,17 @@
             <div class="logo">
                 <span class="text-gradient">PICKLEBALL</span> CENTRAL
             </div>
+            <input type="checkbox" id="menu-toggle">
+            <label for="menu-toggle" class="menu-btn">
+                <span class="menu-icon"></span>
+            </label>
             <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#booking">Book Court</a></li>
-                <li><a href="#location">Location</a></li>
+                <li><a href="#home" onclick="document.getElementById('menu-toggle').checked = false">Home</a></li>
+                <li><a href="#about" onclick="document.getElementById('menu-toggle').checked = false">About</a></li>
+                <li><a href="#booking" onclick="document.getElementById('menu-toggle').checked = false">Book Court</a>
+                </li>
+                <li><a href="#location" onclick="document.getElementById('menu-toggle').checked = false">Location</a>
+                </li>
             </ul>
             <a href="#booking" class="btn btn-primary">Book Now</a>
         </nav>

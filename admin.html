@@ -46,14 +46,41 @@
 
         <!-- Dashboard View -->
         <div id="dashboard-view" style="display: none;" class="animate-fade-in">
-            <div class="dashboard-header flex-between">
-                <div>
-                    <h1>Booking Management</h1>
-                    <p id="stats-summary">Loading stats...</p>
+            <div class="dashboard-header">
+                <div class="header-info">
+                    <h1>Management Dashboard</h1>
+                    <p id="stats-summary">Loading statistics...</p>
                 </div>
-                <div class="actions">
+                <div class="header-actions">
                     <input type="date" id="filter-date" class="glass-input">
+                    <button class="btn btn-secondary" onclick="exportData()">Export CSV</button>
                     <button class="btn btn-primary" onclick="window.location.reload()">Refresh</button>
+                    <button id="clear-data-btn" class="btn btn-danger btn-sm" style="display: none;"
+                        onclick="clearAllData()">Clear Demo Data</button>
+                </div>
+            </div>
+
+            <div class="stats-grid animate-fade-in">
+                <div class="stat-card glass-box">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-data">
+                        <span class="stat-label">Total Bookings</span>
+                        <span id="stat-total-bookings" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-box">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-data">
+                        <span class="stat-label">Total Players</span>
+                        <span id="stat-total-players" class="stat-value">0</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-box">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-data">
+                        <span class="stat-label">Est. Revenue</span>
+                        <span id="stat-revenue" class="stat-value">$0</span>
+                    </div>
                 </div>
             </div>
 
@@ -66,7 +93,7 @@
                                 <th>Time</th>
                                 <th>Customer</th>
                                 <th>Players</th>
-                                <th>Contact</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
