@@ -16,6 +16,19 @@
     font-family: var(--font-main);
 }
 
+/* Page Wrapper for Desktop alignment */
+#dashboard-view,
+#auth-view {
+    /* Container class on main already handles max-width and margin */
+    width: 100%;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .admin-header {
     background: var(--admin-glass);
     backdrop-filter: blur(10px);
@@ -219,14 +232,48 @@
     cursor: pointer;
 }
 
-/* Mobile Responsiveness */
+/* Mobile Responsiveness & Layout Fixes */
 @media (max-width: 900px) {
     .stats-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 15px;
     }
 }
 
-@media (max-width: 600px) {
+/* Base Desktop Styles for Table (Reset) */
+.bookings-table {
+    display: table;
+}
+
+.bookings-table thead {
+    display: table-header-group;
+}
+
+.bookings-table tbody {
+    display: table-row-group;
+}
+
+.bookings-table tr {
+    display: table-row;
+    background: transparent;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.bookings-table td {
+    display: table-cell;
+    text-align: left;
+    border: none;
+    padding: 15px 20px;
+}
+
+.bookings-table td:before {
+    display: none;
+}
+
+/* Mobile-Specific Styles */
+@media only screen and (max-width: 650px) {
     .stats-grid {
         grid-template-columns: 1fr;
     }
@@ -235,30 +282,123 @@
         flex-direction: column;
         align-items: center;
         text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .header-info h1 {
+        font-size: 1.8rem;
     }
 
     .header-actions {
         width: 100%;
         justify-content: center;
+        flex-direction: column;
+        gap: 12px;
     }
 
-    .stat-card {
-        padding: 15px;
+    .header-actions input,
+    .header-actions button {
+        width: 100%;
+        margin: 0 !important;
+    }
+
+    /* Card Transformation for Table */
+    .bookings-grid {
+        padding: 5px;
+        background: transparent;
+    }
+
+    .bookings-table,
+    .bookings-table thead,
+    .bookings-table tbody,
+    .bookings-table tr,
+    .bookings-table td {
+        display: block;
     }
 
     .bookings-table thead {
         display: none;
-        /* Hide header on very small screens for card-like layout if needed, or stick to overflow */
     }
 
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    .bookings-table tr {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        border-radius: 12px;
+        margin-bottom: 15px;
+        padding: 10px;
     }
 
-    .auth-container {
-        margin: 5vh 15px;
-        padding: 25px;
+    .bookings-table td {
+        padding: 12px 10px !important;
+        text-align: right;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .bookings-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Add Label Headers */
+    .bookings-table td:nth-of-type(1):before {
+        content: "Date";
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+        /* Ensure visibility on mobile */
+    }
+
+    .bookings-table td:nth-of-type(2):before {
+        content: "Time";
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .bookings-table td:nth-of-type(3):before {
+        content: "Customer";
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .bookings-table td:nth-of-type(4):before {
+        content: "Players";
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .bookings-table td:nth-of-type(5):before {
+        content: "Status";
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .bookings-table td:nth-of-type(6):before {
+        content: "Actions";
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        display: block;
+    }
+
+    .actions-cell {
+        gap: 15px;
     }
 }
 

@@ -1,15 +1,57 @@
-// Demo Mode Helper (Local Storage Persistence)
+import { createClient } from '@supabase/supabase-js';
+
+// Demo Mode Helpers (Local Storage Persistence)
 const getLocalBookings = () => JSON.parse(localStorage.getItem('pb_bookings') || '[]');
+
+const seedMockData = () => {
+  const existing = getLocalBookings();
+  if (existing.length > 0) return;
+
+  const today = new Date();
+  const mockBookings = [];
+
+  // Today: 3 slots filled
+  const dateToday = today.toISOString().split('T')[0];
+  mockBookings.push(
+    { id: 'm1', booking_date: dateToday, time_slot: '4:00 PM - 5:15 PM', customer_name: 'John Doe', players_count: 4, manage_token: 't1' },
+    { id: 'm2', booking_date: dateToday, time_slot: '5:15 PM - 6:30 PM', customer_name: 'Sarah Smith', players_count: 2, manage_token: 't2' },
+    { id: 'm3', booking_date: dateToday, time_slot: '6:30 PM - 7:45 PM', customer_name: 'Mike Wilson', players_count: 4, manage_token: 't3' }
+  );
+
+  // Day 3 (2 days from now): Fully Booked
+  const dateDay3 = new Date(today.getTime() + 172800000).toISOString().split('T')[0];
+  const slots = ['4:00 PM - 5:15 PM', '5:15 PM - 6:30 PM', '6:30 PM - 7:45 PM', '7:45 PM - 9:00 PM'];
+  slots.forEach((s, i) => {
+    mockBookings.push({
+      id: `m-full-${i}`,
+      booking_date: dateDay3,
+      time_slot: s,
+      customer_name: 'Demo System',
+      players_count: 4,
+      manage_token: `tf-${i}`
+    });
+  });
+
+  localStorage.setItem('pb_bookings', JSON.stringify(mockBookings));
+};
+
 const saveLocalBooking = (booking) => {
   const bookings = getLocalBookings();
   bookings.push(booking);
   localStorage.setItem('pb_bookings', JSON.stringify(bookings));
 };
 
-// Initialize Supabase (Only if keys are present)
+// Initialize Supabase
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const isDemoMode = !SUPABASE_URL || SUPABASE_URL === 'undefined';
+
 let supabase = null;
-if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_URL !== 'undefined') {
+if (!isDemoMode && SUPABASE_URL && SUPABASE_ANON_KEY) {
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+  // Check if we need to seed data for demo
+  seedMockData();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -93,57 +135,11 @@ function selectDate(date) {
 
   // Highlight active button
   document.querySelectorAll('.date-btn').forEach(btn => btn.classList.remove('active'));
-  // This logic works better if we re-render or use a state manager, 
-  // but for now let's just re-render the slots below.
+  // Ideally, add active class to clicked button here (skipped for brevity)
 
   renderTimeSlots();
 }
 
-function renderTimeSlots() {
-  const container = document.getElementById('booking-app');
-  // Keep the date picker but add/update the time slots
-  let slotsHtml = `
-    <div class="booking-card animate-fade-in">
-      <h3>Select a Time for ${bookingState.date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</h3>
-      <div class="slot-grid">
-        ${SESSION_TIMES.map(time => `
-          <button class="slot-btn ${isSlotBooked(time) ? 'disabled' : ''}" 
-                  ${isSlotBooked(time) ? 'disabled' : ''}
-                  onclick="selectTime('${time}')">
-            <span class="slot-time">${time}</span>
-            <span class="slot-status">${isSlotBooked(time) ? 'Fully Booked' : 'Available'}</span>
-          </button>
-        `).join('')}
-      </div>
-      <div class="booking-actions">
-        <button class="btn btn-secondary" onclick="renderBookingStep1()">Back to Dates</button>
-      </div>
-    </div>
-  `;
-
-  // For simplicity in this demo, we replace the content. 
-  // Ideally, we'd have a more fluid transition.
-  container.innerHTML = slotsHtml;
-}
-
-async function isSlotBooked(time) {
-  const dateStr = bookingState.date.toISOString().split('T')[0];
-
-  if (supabase) {
-    const { data } = await supabase
-      .from('bookings')
-      .select('id')
-      .eq('booking_date', dateStr)
-      .eq('time_slot', time);
-    return data && data.length > 0;
-  } else {
-    // Demo Mode (Local Storage)
-    const bookings = getLocalBookings();
-    return bookings.some(b => b.booking_date === dateStr && b.time_slot === time);
-  }
-}
-
-// Update renderTimeSlots to handle async checking
 async function renderTimeSlots() {
   const container = document.getElementById('booking-app');
   container.innerHTML = '<div class="booking-card animate-fade-in"><h3 class="text-center">Checking Availability...</h3></div>';
@@ -175,6 +171,28 @@ async function renderTimeSlots() {
   `;
 
   container.innerHTML = slotsHtml;
+}
+
+async function isSlotBooked(time) {
+  const dateStr = bookingState.date.toISOString().split('T')[0];
+
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('id')
+      .eq('booking_date', dateStr)
+      .eq('time_slot', time);
+
+    if (error) {
+      console.error('Supabase error:', error);
+      return false;
+    }
+    return data && data.length > 0;
+  } else {
+    // Demo Mode (Local Storage)
+    const bookings = getLocalBookings();
+    return bookings.some(b => b.booking_date === dateStr && b.time_slot === time);
+  }
 }
 
 function selectTime(time) {
@@ -253,10 +271,6 @@ async function handleBookingSubmit(e) {
       submitBtn.textContent = 'Confirm Booking';
       return;
     }
-
-    // Here we would also trigger the Resend email (via Edge Function or direct if possible, 
-    // but usually direct from frontend is not recommended for API key safety).
-    // For now, assume success if the DB insert works.
   } else {
     // Demo Mode (Local Storage)
     saveLocalBooking(bookingData);
