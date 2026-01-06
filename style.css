@@ -472,7 +472,7 @@ header nav {
 .about-image {
     position: relative;
     height: 500px;
-    background: linear-gradient(rgba(217, 253, 17, 0.1), rgba(27, 54, 93, 0.2)), url('/assets/hero.png');
+    background: linear-gradient(rgba(217, 253, 17, 0.1), rgba(27, 54, 93, 0.2)), url('./assets/hero.png');
     background-size: cover;
     background-position: center;
     border-radius: var(--radius-xl);

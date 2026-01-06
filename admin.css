@@ -52,11 +52,16 @@
 /* Authentication Layout */
 .auth-container {
     max-width: 450px;
-    margin: 10vh auto;
+    width: 100%;
+    /* Ensure it takes width up to max-width */
+    margin: 15vh auto;
+    /* Vertical spacing */
     padding: 40px;
     border: 1px solid var(--admin-border);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     border-radius: var(--radius-xl);
+    position: relative;
+    z-index: 10;
 }
 
 .auth-container h2 {
