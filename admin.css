@@ -20,6 +20,8 @@
 #dashboard-view,
 #auth-view {
     width: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .flex-between {
@@ -85,6 +87,8 @@
     align-items: flex-start;
     flex-wrap: wrap;
     gap: 20px;
+    position: relative;
+    z-index: 2;
 }
 
 .header-info h1 {
