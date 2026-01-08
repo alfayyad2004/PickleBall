@@ -211,6 +211,15 @@
 }
 
 /* Components */
+/* Fix for conflicting styles from main style.css */
+.glass-box {
+    position: relative !important;
+    bottom: auto !important;
+    right: auto !important;
+    box-shadow: none !important;
+    background: rgba(255, 255, 255, 0.03);
+}
+
 .glass-input {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
