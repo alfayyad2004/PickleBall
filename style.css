@@ -714,6 +714,93 @@ footer {
     }
 }
 
+/* Court Type Selection Styling */
+.court-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.court-option {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.court-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-5px);
+    border-color: rgba(217, 253, 17, 0.3);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.court-option.selected {
+    background: rgba(217, 253, 17, 0.1);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 20px rgba(217, 253, 17, 0.15);
+}
+
+.court-option.selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--color-primary);
+}
+
+.court-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px rgba(217, 253, 17, 0.2));
+    transition: transform 0.3s ease;
+}
+
+.court-option:hover .court-icon {
+    transform: scale(1.1);
+}
+
+.court-option h4 {
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.court-option p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.court-option .status-badge {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.court-option.selected .status-badge {
+    background: var(--color-primary);
+    color: var(--color-secondary);
+    font-weight: 700;
+}
+
 /* Responsive Layouts */
 
 /* Mobile Navigation & Hamburger */
