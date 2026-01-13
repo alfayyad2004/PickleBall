@@ -1,51 +1,11 @@
-// import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// Configuration
+const SUPABASE_URL = 'https://tdcmqajzmwagheznaobg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkY21xYWp6bXdhZ2hlem5hb2JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzNDU3OTgsImV4cCI6MjA4MzkyMTc5OH0.FlsPnxylXjrtjxJtRB7fvWHZzDgztShGIS058CloAZo';
 
-// Demo Mode Helpers (Local Storage Persistence)
-const getLocalBookings = () => JSON.parse(localStorage.getItem('pb_bookings') || '[]');
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-const seedMockData = () => {
-  const existing = getLocalBookings();
-  if (existing.length > 0) return;
-
-  const today = new Date();
-  const mockBookings = [];
-
-  // Today: 3 slots filled
-  const dateToday = today.toISOString().split('T')[0];
-  mockBookings.push(
-    { id: 'm1', booking_date: dateToday, time_slot: '4:00 PM - 5:15 PM', customer_name: 'John Doe', players_count: 4, manage_token: 't1' },
-    { id: 'm2', booking_date: dateToday, time_slot: '5:15 PM - 6:30 PM', customer_name: 'Sarah Smith', players_count: 2, manage_token: 't2' },
-    { id: 'm3', booking_date: dateToday, time_slot: '6:30 PM - 7:45 PM', customer_name: 'Mike Wilson', players_count: 4, manage_token: 't3' }
-  );
-
-  // Day 3 (2 days from now): Fully Booked
-  const dateDay3 = new Date(today.getTime() + 172800000).toISOString().split('T')[0];
-  const slots = ['4:00 PM - 5:15 PM', '5:15 PM - 6:30 PM', '6:30 PM - 7:45 PM', '7:45 PM - 9:00 PM'];
-  slots.forEach((s, i) => {
-    mockBookings.push({
-      id: `m-full-${i}`,
-      booking_date: dateDay3,
-      time_slot: s,
-      customer_name: 'Demo System',
-      players_count: 4,
-      manage_token: `tf-${i}`
-    });
-  });
-
-  localStorage.setItem('pb_bookings', JSON.stringify(mockBookings));
-};
-
-const saveLocalBooking = (booking) => {
-  const bookings = getLocalBookings();
-  bookings.push(booking);
-  localStorage.setItem('pb_bookings', JSON.stringify(bookings));
-};
-
-// Force Demo Mode
-const isDemoMode = true;
-let supabase = null;
-
-seedMockData();
+// Initialize
+// No mock data seeding needed for live mode
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Pickleball Central - Ready to serve!');
@@ -181,11 +141,8 @@ async function isSlotBooked(time) {
       return false;
     }
     return data && data.length > 0;
-  } else {
-    // Demo Mode (Local Storage)
-    const bookings = getLocalBookings();
-    return bookings.some(b => b.booking_date === dateStr && b.time_slot === time);
   }
+  return false;
 }
 
 function selectTime(time) {
@@ -259,15 +216,16 @@ async function handleBookingSubmit(e) {
       .insert([bookingData]);
 
     if (error) {
+      console.error('Booking error:', error);
       alert('Booking failed: ' + error.message);
       submitBtn.disabled = false;
       submitBtn.textContent = 'Confirm Booking';
       return;
     }
   } else {
-    // Demo Mode (Local Storage)
-    saveLocalBooking(bookingData);
-    console.log('Demo Mode: Booking saved to localStorage');
+    alert('System Error: Database connection missing.');
+    submitBtn.disabled = false;
+    return;
   }
 
   renderSuccess();

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote - Pickleball Central</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --color-primary: #0f172a;
+            --color-accent: #2563eb;
+            --color-text: #334155;
+            --color-text-light: #64748b;
+            --color-bg: #ffffff;
+            --color-border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background: #f1f5f9;
+            margin: 0;
+            padding: 40px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .page {
+            background: white;
+            width: 21cm;
+            /* A4 width */
+            min-height: 29.7cm;
+            /* A4 height */
+            margin: 0 auto;
+            padding: 2.5cm;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Invoice Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 20px;
+        }
+
+        .company-branding h1 {
+            color: var(--color-primary);
+            font-size: 24px;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .company-branding p {
+            font-size: 14px;
+            color: var(--color-text-light);
+            margin: 0;
+        }
+
+        .invoice-details {
+            text-align: right;
+        }
+
+        .invoice-details h2 {
+            color: var(--color-text-light);
+            font-size: 16px;
+            margin: 0 0 5px 0;
+            font-weight: 500;
+        }
+
+        .invoice-details strong {
+            color: var(--color-primary);
+            font-size: 18px;
+        }
+
+        /* Client Section */
+        .client-section {
+            margin-bottom: 50px;
+        }
+
+        .client-section h3 {
+            font-size: 14px;
+            color: var(--color-text-light);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .client-info strong {
+            display: block;
+            font-size: 18px;
+            color: var(--color-primary);
+            margin-bottom: 4px;
+        }
+
+        /* Options */
+        .option-block {
+            margin-bottom: 40px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .option-header {
+            background: var(--color-primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .option-header .price {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .option-body {
+            padding: 20px;
+        }
+
+        .feature-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .feature-list li {
+            margin-bottom: 12px;
+            padding-left: 24px;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--color-accent);
+            font-weight: bold;
+        }
+
+        /* Pro Features Breakdown */
+        .pro-breakdown {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .pro-breakdown th,
+        .pro-breakdown td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 14px;
+        }
+
+        .pro-breakdown th {
+            color: var(--color-text-light);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .pro-breakdown td.cost {
+            text-align: right;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        /* Total Section */
+        .total-section {
+            margin-top: 30px;
+            text-align: right;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .total-line span {
+            width: 150px;
+        }
+
+        .grand-total {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--color-accent);
+            margin-top: 10px;
+            border-top: 2px solid var(--color-border);
+            padding-top: 10px;
+            display: inline-block;
+        }
+
+        /* Requirements Alert */
+        .requirements-alert {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #92400e;
+        }
+
+        .requirements-alert strong {
+            display: block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--color-text-light);
+            border-top: 1px solid var(--color-border);
+            padding-top: 20px;
+        }
+
+        /* Print Specifics */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .page {
+                box-shadow: none;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+        <header>
+            <div class="company-branding">
+                <h1>Caribbean Code Studios</h1>
+                <p>Digital Solutions & Custom Software</p>
+                <p>Port of Spain, Trinidad</p>
+                <p>contact@caribbeancodestudios.com</p>
+            </div>
+            <div class="invoice-details">
+                <h2>Date</h2>
+                <strong>January 13, 2026</strong>
+                <h2 style="margin-top: 15px;">Valid Until</h2>
+                <p>February 13, 2026</p>
+            </div>
+        </header>
+
+        <section class="client-section">
+            <h3>Prepared For</h3>
+            <div class="client-info">
+                <strong>Pickleball Central</strong>
+                <p>Attention: Project Owner</p>
+                <p>Trinidad & Tobago</p>
+            </div>
+        </section>
+
+        <!-- Option 1 -->
+        <div class="option-block">
+            <div class="option-header">
+                <h3>Option 1: Base Booking System</h3>
+                <span class="price">$3,500 TTD</span>
+            </div>
+            <div class="option-body">
+                <p style="margin-top:0; font-style: italic; color: var(--color-text-light);">
+                    Timeline: 2 Weeks
+                </p>
+                <ul class="feature-list">
+                    <li><strong>Public Booking Page:</strong> Mobile-friendly calendar, fast slot selection.</li>
+                    <li><strong>Admin Dashboard:</strong> Full calendar view, manual override tools.</li>
+                    <li><strong>Automatic Notifications:</strong> Branded email confirmations.</li>
+                    <li><strong>Hosting:</strong> Secure deployment on Netlify & Supabase.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Option 2 -->
+        <div class="option-block">
+            <div class="option-header" style="background: var(--color-accent);">
+                <h3>Option 2: The "Pro Club" System</h3>
+                <span class="price">$8,500 TTD</span>
+            </div>
+            <div class="option-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <p style="margin:0; font-style: italic; color: var(--color-text-light);">
+                        Includes everything in Option 1 plus upgrades below.
+                    </p>
+                    <span
+                        style="background:#dbeafe; color:#1e40af; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:700;">Fast
+                        Track Timeline: 2-3 Weeks</span>
+                </div>
+
+                <table class="pro-breakdown">
+                    <thead>
+                        <tr>
+                            <th>Feature Upgrade</th>
+                            <th style="text-align: right;">Value Add</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>1. WiPay Payment Portal Integration</strong><br>
+                                <span style="font-size: 12px; color: #64748b;">Accept Credit Card & Linnx payments.
+                                    Refund logic included.</span>
+                            </td>
+                            <td class="cost">+$1,500 TTD</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>2. Membership & Subscription Module</strong><br>
+                                <span style="font-size: 12px; color: #64748b;">Recurring billing engine for monthly
+                                    subscribers. "Member" pricing tiers.</span>
+                            </td>
+                            <td class="cost">+$2,500 TTD</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>3. Internal Sales & Revenue Dashboard</strong><br>
+                                <span style="font-size: 12px; color: #64748b;">A built-in financial tracker. View
+                                    daily/monthly revenue charts, track cash vs card payments, and export custom reports
+                                    directly from your admin panel. Replaces the need for external apps.</span>
+                            </td>
+                            <td class="cost">+$1,000 TTD</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="requirements-alert">
+                    <strong>Client Requirements for Pro System:</strong>
+                    • <strong>Supabase Pro Plan ($25 USD/mo):</strong> Required to keep the automated billing engine
+                    running 24/7.<br>
+                    • <strong>WiPay Merchant Account:</strong> Must be verified and active to go live.
+                </div>
+            </div>
+        </div>
+
+        <div class="total-section">
+            <div class="total-line">
+                <span>Total (Base):</span>
+                <span>$3,500 TTD</span>
+            </div>
+            <div class="total-line">
+                <span>Total (Pro Upgrades):</span>
+                <span>$5,000 TTD</span>
+            </div>
+            <div class="grand-total">
+                PRO PACKAGE TOTAL: $8,500 TTD
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Terms:</strong> 50% Upfront Deposit. 50% Upon Completion. Includes 14 days of post-launch
+                support.</p>
+            <p>&copy; 2026 Caribbean Code Studios. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Instructions that show only on screen, not print -->
+    <div class="no-print"
+        style="position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        <p style="margin: 0 0 10px 0;"><strong>🖨️ How to Save as PDF:</strong></p>
+        <ol style="margin: 0; padding-left: 20px; font-size: 14px;">
+            <li>Press <strong>Ctrl + P</strong> (Windows) or <strong>Cmd + P</strong> (Mac).</li>
+            <li>Select <strong>"Save as PDF"</strong> as the printer.</li>
+            <li>Ensure "Background Graphics" is <strong>checked</strong>.</li>
+            <li>Click Save.</li>
+        </ol>
+    </div>
+
+</body>
+
+</html>
