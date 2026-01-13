@@ -209,12 +209,7 @@ function renderBookingForm() {
         </div>
         <div class="form-group">
           <label>Number of Players</label>
-          <select name="players" required>
-            <option value="4" selected>4 Players (Standard)</option>
-            <option value="2">2 Players</option>
-            <option value="1">1 Player</option>
-            <option value="5">5+ Players</option>
-          </select>
+          <input type="number" name="players" required min="1" value="4" placeholder="Enter number of players">
         </div>
         <p class="form-note">Payment of $40/player collected in person.</p>
         <div class="booking-actions">
