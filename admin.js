@@ -17,6 +17,14 @@ const statsSummary = document.getElementById('stats-summary');
 const filterDateInput = document.getElementById('filter-date');
 const loginError = document.getElementById('login-error');
 
+// Constants
+const COURTS = {
+    covered: ['C1', 'C2', 'C3', 'C4'],
+    uncovered: ['U1', 'U2', 'U3', 'U4', 'U5']
+};
+
+let allBookings = []; // Local cache
+
 // Initialization
 document.addEventListener('DOMContentLoaded', async () => {
     checkUser();
@@ -24,6 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
     if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
     if (filterDateInput) filterDateInput.addEventListener('change', () => fetchBookings(filterDateInput.value));
+
+    // Initial Render needed for "Add Booking" button contexts
+    updateCourtOptions();
 });
 
 // Auth Functions
@@ -109,6 +120,7 @@ async function fetchBookings(dateFilter = null) {
 }
 
 function renderBookings(bookings) {
+    allBookings = bookings; // Cache for edit
     bookingsList.innerHTML = bookings.map(booking => `
         <tr>
             <td>
@@ -117,12 +129,15 @@ function renderBookings(bookings) {
             </td>
             <td>${booking.time_slot}</td>
             <td>
-                <span class="customer-info">${booking.customer_name}</span>
-                <span class="customer-email">${booking.customer_email}</span>
+                <div><span class="customer-info">${booking.customer_name}</span></div>
+                <div style="font-size:0.8rem; color:var(--color-text-muted);">
+                    ${booking.court_id || 'Unassigned'} <span style="opacity:0.6">(${booking.court_type || '?'})</span>
+                </div>
             </td>
             <td><span class="players-badge">${booking.players_count} Players</span></td>
             <td><span class="status-badge status-confirmed">${booking.status || 'Confirmed'}</span></td>
             <td class="actions-cell">
+                <button class="btn-icon" onclick="editBooking('${booking.id}')" title="Edit">✏️</button>
                 <button class="btn-icon delete" onclick="deleteBooking('${booking.id}')" title="Delete">🗑️</button>
             </td>
         </tr>
@@ -157,6 +172,97 @@ window.deleteBooking = async (id) => {
     }
 };
 
-window.editBooking = (id) => {
-    alert("Edit feature coming in Phase 2 update.");
+// --- Modal & Booking Logic ---
+
+window.openModal = (bookingId = null) => {
+    const modal = document.getElementById('booking-modal');
+    const form = document.getElementById('booking-form');
+    const title = document.getElementById('modal-title');
+
+    // Reset or Populate
+    if (bookingId) {
+        title.textContent = 'Edit Booking';
+        const booking = allBookings.find(b => b.id === bookingId);
+        if (booking) {
+            form.id.value = booking.id;
+            form.booking_date.value = booking.booking_date;
+            form.time_slot.value = booking.time_slot;
+            form.court_type.value = booking.court_type || 'covered';
+            updateCourtOptions(booking.court_type); // Populate options first
+            form.court_id.value = booking.court_id;
+            form.customer_name.value = booking.customer_name;
+            form.customer_email.value = booking.customer_email;
+            form.customer_phone.value = booking.customer_phone;
+            form.players_count.value = booking.players_count;
+            form.status.value = booking.status;
+        }
+    } else {
+        title.textContent = 'New Booking';
+        form.reset();
+        form.id.value = '';
+        updateCourtOptions(); // Default to covered options
+    }
+
+    modal.style.display = 'flex';
 };
+
+window.closeModal = () => {
+    document.getElementById('booking-modal').style.display = 'none';
+};
+
+window.updateCourtOptions = (selectedType = null) => {
+    const type = selectedType || document.getElementById('modal-court-type').value;
+    const select = document.getElementById('modal-court-id');
+    const options = COURTS[type] || [];
+
+    select.innerHTML = options.map(c => `<option value="${c}">${c}</option>`).join('');
+};
+
+window.editBooking = (id) => openModal(id);
+
+document.getElementById('booking-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    const id = data.id; // Empty if new
+
+    const payload = {
+        booking_date: data.booking_date,
+        time_slot: data.time_slot,
+        court_id: data.court_id,
+        court_type: data.court_type,
+        customer_name: data.customer_name,
+        customer_email: data.customer_email,
+        customer_phone: data.customer_phone,
+        players_count: parseInt(data.players_count),
+        status: data.status,
+    };
+
+    if (!id) {
+        payload.manage_token = crypto.randomUUID();
+    }
+
+    let error;
+    if (id) {
+        // Update
+        const res = await supabase.from('bookings').update(payload).eq('id', id);
+        error = res.error;
+    } else {
+        // Create
+        const res = await supabase.from('bookings').insert([payload]);
+        error = res.error;
+    }
+
+    if (error) {
+        if (data.override_check === 'on' && error.code === '23505') {
+            // Basic Override attempt (Deleting conflict and forcing insert - risky but effective for admin)
+            // For now, let's just warn
+            alert("Conflict detected! To override, please delete the existing booking for this slot first, then create this one.");
+        } else {
+            alert('Error saving booking: ' + error.message);
+        }
+    } else {
+        closeModal();
+        fetchBookings(); // Refresh UI
+    }
+});
