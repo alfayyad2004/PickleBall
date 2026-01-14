@@ -37,6 +37,80 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateCourtOptions();
 });
 
+// View Switching
+window.toggleView = (viewName) => {
+    const dashboard = document.getElementById('dashboard-view');
+    const bookingsView = document.querySelector('.bookings-grid'); // Weak selector, let's target by ID if possible or structure
+    // Better strategy: Hide/Show specific containers.
+
+    // In admin.html we added <div id="members-view"> and wrapped bookings in... wait, I need to check structure.
+    // I wrapped the members view in <div id="members-view"> and it is sibling to .bookings-grid?
+    // Let's grab specific elements based on the HTML edits.
+
+    const membersView = document.getElementById('members-view');
+    // The previous bookings table didn't have a specific container ID other than being inside dashboard-view.
+    // I need to be careful. The bookings table is inside <div class="bookings-grid glass-box">.
+    // Let's assume the first .bookings-grid is for bookings.
+
+    const bookingsGrid = document.querySelector('.bookings-grid:not(#members-view .bookings-grid)');
+
+    // Re-reading admin.html structure from my edit:
+    // I rendered bookings-grid inside dashboard-view. 
+    // I rendered members-view inside dashboard-view (as a sibling to bookings-grid?).
+
+    if (viewName === 'members') {
+        if (bookingsGrid) bookingsGrid.style.display = 'none';
+        membersView.style.display = 'block';
+        fetchMembers();
+    } else {
+        if (bookingsGrid) bookingsGrid.style.display = 'block';
+        membersView.style.display = 'none';
+        fetchBookings(); // Refresh bookings
+    }
+};
+
+async function fetchMembers() {
+    const list = document.getElementById('members-list');
+    list.innerHTML = '<tr><td colspan="5" class="text-center">Loading members...</td></tr>';
+
+    const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        list.innerHTML = `<tr><td colspan="5" class="text-center text-red-500">Error: ${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        list.innerHTML = '<tr><td colspan="5" class="text-center">No subscriptions found.</td></tr>';
+        return;
+    }
+
+    list.innerHTML = data.map(sub => {
+        const endDate = new Date(sub.end_date);
+        const now = new Date();
+        const isActive = sub.status === 'active' && endDate > now;
+        const statusClass = isActive ? 'status-confirmed' : 'status-cancelled'; // Re-using styles
+
+        return `
+        <tr>
+            <td>
+                <div style="font-weight: 700;">${sub.full_name || 'Unknown'}</div>
+            </td>
+            <td>${sub.customer_email}</td>
+            <td>${sub.phone_number || '-'}</td>
+            <td><span class="status-badge ${statusClass}">${sub.status}</span></td>
+            <td>
+                <div>${endDate.toLocaleDateString()}</div>
+                <div style="font-size: 0.8rem; color: var(--color-text-muted);">${isActive ? 'Active' : 'Expired'}</div>
+            </td>
+        </tr>
+    `}).join('');
+}
+
+
 // Auth Functions
 async function checkUser() {
     // Check if we have a simple session marker

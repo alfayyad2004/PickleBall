@@ -55,6 +55,7 @@
                 <div class="header-actions">
                     <input type="date" id="filter-date" class="glass-input">
                     <button class="btn btn-secondary" onclick="openSettings()">⚙️ Pricing</button>
+                    <button class="btn btn-secondary" onclick="toggleView('members')">👥 Members</button>
                     <button class="btn btn-primary" onclick="openModal()">+ Add Booking</button>
                     <button class="btn btn-secondary" onclick="exportData()">Export CSV</button>
                     <button class="btn btn-primary" onclick="window.location.reload()">Refresh</button>
@@ -130,6 +131,42 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Members View -->
+            <div id="members-view" style="display: none;" class="animate-fade-in">
+                <div class="dashboard-header">
+                    <div class="header-info">
+                        <h1>Active Members</h1>
+                        <p>Manage monthly subscriptions.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="toggleView('dashboard')">← Back to Bookings</button>
+                    </div>
+                </div>
+
+                <div class="bookings-grid glass-box">
+                    <div class="table-responsive">
+                        <table class="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Next Payment</th>
+                                    <!-- <th>Actions</th> Future: Cancel/Delete -->
+                                </tr>
+                            </thead>
+                            <tbody id="members-list">
+                                <tr>
+                                    <td colspan="5" class="text-center">Loading members...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
         <!-- Booking Modal -->
         <div id="booking-modal" class="modal-overlay" style="display: none;">
