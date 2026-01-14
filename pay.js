@@ -10,7 +10,7 @@ const WIPAY_CONFIG = {
     environment: 'sandbox',
     currency: 'TTD',
     country_code: 'TT',
-    fee_structure: 'merchant_pay', // Keep total clean for sandbox testing
+    fee_structure: 'customer_pay', // Standard sandbox default
     method: 'credit_card',
     return_url: 'https://pickleball-central.netlify.app/payment_success.html' // Will be overridden dynamically
 };
