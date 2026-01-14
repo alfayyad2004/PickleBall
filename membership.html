@@ -209,23 +209,41 @@
                 return;
             }
 
-            // Create Pending Subscription
-            // Note: We are using random order IDs for prototype. Real app uses DB ID.
-            // Let's create the pending record first.
+            const btn = document.querySelector('button.btn-primary');
+            const originalText = btn.textContent;
+            btn.textContent = "Processing...";
+            btn.disabled = true;
 
-            /* TODO Phase 2b: Use this ID for order_id
-            const { data, error } = await supabaseClient
-                .from('subscriptions')
-                .insert([{ customer_email: email, status: 'pending', payment_ref: 'INIT' }])
-                .select()
-                .single();
-            */
+            try {
+                // 1. Create Pending Subscription
+                const { data, error } = await supabaseClient
+                    .from('subscriptions')
+                    .insert([{
+                        customer_email: email,
+                        full_name: name,
+                        phone_number: phone,
+                        status: 'pending',
+                        payment_ref: 'INIT'
+                    }])
+                    .select()
+                    .single();
 
-            // For now, simpler flow: Just redirect, capture details on success or rely on Email
-            // But user asked "wouldnt u need to create an account?"
-            // So let's simulate that "Account Creation" feeling by validating the form.
+                if (error) {
+                    throw error;
+                }
 
-            window.startWiPayRedirect(currentFee);
+                const pendingID = data.id;
+                console.log("Created Pending Subscription:", pendingID);
+
+                // 2. Redirect to WiPay with this ID as the 'order_id'
+                window.startWiPayRedirect(currentFee, pendingID);
+
+            } catch (err) {
+                console.error("Join Error:", err);
+                alert("Something went wrong initializing your membership. Please try again.");
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         }
 
         document.addEventListener('DOMContentLoaded', fetchFee);
