@@ -213,7 +213,7 @@ function createWiPayLink(total, customOrderID) {
         'fee_structure': WIPAY_CONFIG.fee_structure,
         'method': WIPAY_CONFIG.method,
         'order_id': order_id,
-        'origin': 'Pickleball Central',
+        'origin': 'Pickleball_Central',
         'response_url': WIPAY_CONFIG.return_url,
         'total': total.toFixed(2), // Ensure 2 decimal places
         'hash': hash
