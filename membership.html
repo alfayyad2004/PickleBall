@@ -94,7 +94,11 @@
 
     <header class="glass">
         <nav class="container">
-            <a href="/" class="logo">Pickleball<span style="color: var(--color-primary);">Central</span></a>
+            <div class="logo">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    <span class="text-gradient">PICKLEBALL</span> CENTRAL
+                </a>
+            </div>
             <div class="nav-links">
                 <a href="/index.html">Book Court</a>
                 <a href="#about">About</a>
@@ -107,7 +111,6 @@
         <section class="membership-hero">
             <h1 class="hero-title">Become a <span class="text-gradient">Member</span></h1>
             <p class="hero-subtitle" style="margin: 0 auto 40px;">Join the community and play unlimited.*</p>
-            <!-- We can update subtitle based on actual perks -->
         </section>
 
         <section class="price-section animate-fade-in">
@@ -123,7 +126,29 @@
                     <li>No Guest Fees</li>
                 </ul>
 
-                <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="startPayment()">
+                <form id="member-form" style="text-align: left; margin-bottom: 20px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: var(--color-text-muted);">Full
+                            Name</label>
+                        <input type="text" id="member-name" class="glass-input" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: var(--color-text-muted);">Email
+                            Address</label>
+                        <input type="email" id="member-email" class="glass-input" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: var(--color-text-muted);">Phone
+                            Number</label>
+                        <input type="tel" id="member-phone" class="glass-input" required
+                            style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white;">
+                    </div>
+                </form>
+
+                <button class="btn btn-primary" style="width: 100%; justify-content: center;"
+                    onclick="handleJoinClick()">
                     Subscribe with WiPay
                 </button>
 
@@ -174,8 +199,32 @@
             }
         }
 
-        function startPayment() {
-            // Call function from pay.js
+        async function handleJoinClick() {
+            const name = document.getElementById('member-name').value;
+            const email = document.getElementById('member-email').value;
+            const phone = document.getElementById('member-phone').value;
+
+            if (!name || !email || !phone) {
+                alert("Please fill in all details (Name, Email, Phone) to join.");
+                return;
+            }
+
+            // Create Pending Subscription
+            // Note: We are using random order IDs for prototype. Real app uses DB ID.
+            // Let's create the pending record first.
+
+            /* TODO Phase 2b: Use this ID for order_id
+            const { data, error } = await supabaseClient
+                .from('subscriptions')
+                .insert([{ customer_email: email, status: 'pending', payment_ref: 'INIT' }])
+                .select()
+                .single();
+            */
+
+            // For now, simpler flow: Just redirect, capture details on success or rely on Email
+            // But user asked "wouldnt u need to create an account?"
+            // So let's simulate that "Account Creation" feeling by validating the form.
+
             window.startWiPayRedirect(currentFee);
         }
 

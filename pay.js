@@ -206,7 +206,7 @@ function createWiPayLink(total) {
     const hash_string = order_id + total + WIPAY_CONFIG.api_key;
     const hash = md5(hash_string);
 
-    const baseUrl = "https://wipayfinancial.com/v1/gateway";
+    const baseUrl = "https://tt.wipayfinancial.com/plugins/payments/request";
 
     // Construct Query Params
     const params = new URLSearchParams({
