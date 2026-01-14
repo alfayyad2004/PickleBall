@@ -266,3 +266,34 @@ document.getElementById('booking-form').addEventListener('submit', async (e) => 
         fetchBookings(); // Refresh UI
     }
 });
+
+// --- Settings Logic ---
+
+window.openSettings = async () => {
+    document.getElementById('settings-modal').style.display = 'flex';
+    // Fetch current fee
+    const { data } = await supabase.from('app_settings').select('setting_value').eq('setting_key', 'membership_fee').single();
+    if (data) {
+        document.getElementById('setting-fee').value = data.setting_value;
+    }
+};
+
+window.closeSettings = () => {
+    document.getElementById('settings-modal').style.display = 'none';
+};
+
+document.getElementById('settings-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fee = document.getElementById('setting-fee').value;
+
+    const { error } = await supabase
+        .from('app_settings')
+        .upsert({ setting_key: 'membership_fee', setting_value: fee });
+
+    if (error) {
+        alert('Error saving settings: ' + error.message);
+    } else {
+        alert('Membership fee updated successfully!');
+        closeSettings();
+    }
+});

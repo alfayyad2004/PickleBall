@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickleball Central - Membership</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Syncopate:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Specific Styles for Membership Page */
+        .membership-hero {
+            text-align: center;
+            padding: 100px 20px 60px;
+        }
+
+        .price-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(217, 253, 17, 0.3);
+            border-radius: var(--radius-xl);
+            padding: 50px;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--color-primary);
+        }
+
+        .price-amount {
+            font-size: 4rem;
+            font-family: var(--font-heading);
+            color: var(--color-primary);
+            margin: 20px 0;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+        }
+
+        .features-list {
+            text-align: left;
+            margin: 40px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--color-text);
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: var(--color-primary);
+            font-weight: bold;
+        }
+
+        .legal-note {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="glass">
+        <nav class="container">
+            <a href="/" class="logo">Pickleball<span style="color: var(--color-primary);">Central</span></a>
+            <div class="nav-links">
+                <a href="/index.html">Book Court</a>
+                <a href="#about">About</a>
+                <a href="#" class="btn btn-primary" style="padding: 8px 20px;">Join Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="membership-hero">
+            <h1 class="hero-title">Become a <span class="text-gradient">Member</span></h1>
+            <p class="hero-subtitle" style="margin: 0 auto 40px;">Join the community and play unlimited.*</p>
+            <!-- We can update subtitle based on actual perks -->
+        </section>
+
+        <section class="price-section animate-fade-in">
+            <div class="price-card glass">
+                <h3>Monthly Access</h3>
+                <div class="price-amount" id="display-fee">...</div>
+                <div class="price-period">Per Month (TTD)</div>
+
+                <ul class="features-list">
+                    <li>Unlimited Court Bookings</li>
+                    <li>Priority Scheduling (Book 14 days in advance)</li>
+                    <li>Exclusive Member Events</li>
+                    <li>No Guest Fees</li>
+                </ul>
+
+                <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="startPayment()">
+                    Subscribe with WiPay
+                </button>
+
+                <p class="legal-note">Secure payment processed by WiPay Caribbean. You can cancel anytime.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                PickleballCentral
+                <p>Trinidad's Premier Pickleball Facility</p>
+            </div>
+            <div class="footer-links">
+                <a href="/index.html">Book</a>
+                <a href="#">Membership</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 Pickleball Central. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="pay.js"></script>
+    <script>
+        // --- Supabase Config (Same as main.js) ---
+        const SUPABASE_URL = 'https://tdcmqajzmwagheznaobg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkY21xYWp6bXdhZ2hlem5hb2JnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgzNDU3OTgsImV4cCI6MjA4MzkyMTc5OH0.FlsPnxylXjrtjxJtRB7fvWHZzDgztShGIS058CloAZo';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentFee = 0;
+
+        async function fetchFee() {
+            const { data, error } = await supabase
+                .from('app_settings')
+                .select('setting_value')
+                .eq('setting_key', 'membership_fee')
+                .single();
+
+            if (data) {
+                currentFee = parseFloat(data.setting_value);
+                document.getElementById('display-fee').textContent = '$' + currentFee.toFixed(0);
+            } else {
+                document.getElementById('display-fee').textContent = '$300'; // Fallback
+                currentFee = 300;
+            }
+        }
+
+        function startPayment() {
+            // Call function from pay.js
+            window.startWiPayRedirect(currentFee);
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchFee);
+    </script>
+</body>
+
+</html>
