@@ -414,6 +414,28 @@
         display: block;
     }
 
+    /* Members Table Specific Labels for Mobile */
+    #members-view .bookings-table td:nth-of-type(1):before {
+        content: "Name";
+    }
+
+    #members-view .bookings-table td:nth-of-type(2):before {
+        content: "Email";
+    }
+
+    #members-view .bookings-table td:nth-of-type(3):before {
+        content: "Phone";
+    }
+
+    #members-view .bookings-table td:nth-of-type(4):before {
+        content: "Status";
+    }
+
+    #members-view .bookings-table td:nth-of-type(5):before {
+        content: "Renewal";
+    }
+
+
     .actions-cell {
         gap: 15px;
     }
