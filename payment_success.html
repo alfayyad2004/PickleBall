@@ -75,33 +75,27 @@
                 // --- Simple Logic for now ---
                 // For this user demo, we will trust 'success' status but log the verification.
 
-                // 2. Insert Subscription into Supabase
-                // We need a customer identifier. 
-                // Ideally, we should have passed the customer_email in the 'D' parameter or stored order_id in DB beforehand.
-                // Since we didn't implement a pre-flight DB record, we'll ask the user for their email OR 
-                // for this demo, we can just create a "New Member" record.
+                // 2. Update Subscription in Supabase
+                // The 'order_id' parameter is our Subscription UUID (passed from membership.html)
 
-                // IMPROVEMENT: On membership.html, we should ask for Email BEFORE paying.
-                // Current flow: Click Join -> Pay. We don't know WHO paid.
-                // Fix: We'll prompt for email here if we can't find it.
-
-                const { error } = await supabase.from('subscriptions').insert([{
-                    customer_email: "member_" + transaction_id + "@example.com", // Placeholder since we didn't capture email
-                    status: 'active',
-                    payment_ref: transaction_id,
-                    start_date: new Date().toISOString(),
-                    // end_date: 30 days from now
-                    end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-                }]);
+                const { error } = await supabaseClient
+                    .from('subscriptions')
+                    .update({
+                        status: 'active',
+                        payment_ref: transaction_id,
+                        start_date: new Date().toISOString(),
+                        end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // +30 Days
+                    })
+                    .eq('id', order_id);
 
                 if (error) {
                     console.error('DB Error:', error);
                     titleEl.textContent = "Membership Activation Failed";
-                    msgEl.textContent = "Payment successful, but we couldn't save your membership. Please contact clear support with Ref: " + transaction_id;
+                    msgEl.textContent = "Payment successful, but we couldn't activate your membership. Please contact support with Ref: " + transaction_id;
                     iconEl.textContent = "⚠️";
                 } else {
                     titleEl.textContent = "Welcome to the Club! 🎉";
-                    msgEl.innerHTML = `Your payment of <strong>$${total} TTD</strong> was successful.<br>Transaction ID: ${transaction_id}`;
+                    msgEl.innerHTML = `Your payment of <strong>$${total} TTD</strong> was successful.<br>Transaction ID: ${transaction_id}<br><br>We've sent a confirmation email.`;
                     iconEl.textContent = "✅";
                 }
 
