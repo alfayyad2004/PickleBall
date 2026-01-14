@@ -226,13 +226,4 @@ function createWiPayLink(total) {
 }
 
 // Export for use in module
-window.startWiPayRedirect = (amount) => {
-    // Check if keys are set
-    if (WIPAY_CONFIG.account_number === '1234567890') {
-        alert("Developer Mode: Update pay.js with real WiPay Keys to process actual Sandbox transactions.");
-    }
 
-    const url = createWiPayLink(amount);
-    console.log("Redirecting to:", url);
-    window.location.href = url;
-};
