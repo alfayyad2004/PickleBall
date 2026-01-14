@@ -10,9 +10,9 @@ const WIPAY_CONFIG = {
     environment: 'sandbox',
     currency: 'TTD',
     country_code: 'TT',
-    fee_structure: 'customer_pay',
+    fee_structure: 'merchant_pay', // Keep total clean for sandbox testing
     method: 'credit_card',
-    return_url: 'https://pickleball-central.netlify.app/payment_success.html'
+    return_url: 'https://pickleball-central.netlify.app/payment_success.html' // Will be overridden dynamically
 };
 
 /**
@@ -204,6 +204,10 @@ function createWiPayLink(total, customOrderID) {
 
     const baseUrl = "https://tt.wipayfinancial.com/plugins/payments/request";
 
+    // Dynamic Return URL for Localhost vs Production
+    // This allows it to work on 127.0.0.1 or pickleball-central.netlify.app without code changes.
+    const dynamicReturnUrl = window.location.origin + '/payment_success.html';
+
     // Construct Query Params
     const params = new URLSearchParams({
         'account_number': WIPAY_CONFIG.account_number,
@@ -214,7 +218,7 @@ function createWiPayLink(total, customOrderID) {
         'method': WIPAY_CONFIG.method,
         'order_id': order_id,
         'origin': 'Pickleball_Central',
-        'response_url': WIPAY_CONFIG.return_url,
+        'response_url': dynamicReturnUrl, // Use dynamic URL
         'total': total.toFixed(2), // Ensure 2 decimal places
         'hash': hash
     });
