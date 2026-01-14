@@ -89,10 +89,31 @@ async function fetchMembers() {
     }
 
     list.innerHTML = data.map(sub => {
-        const endDate = new Date(sub.end_date);
-        const now = new Date();
-        const isActive = sub.status === 'active' && endDate > now;
-        const statusClass = isActive ? 'status-confirmed' : 'status-cancelled'; // Re-using styles
+        let nextPaymentDisplay = '-';
+        let statusClass = 'status-cancelled'; // Default grey/red
+
+        if (sub.status === 'active') {
+            if (sub.end_date) {
+                const endDate = new Date(sub.end_date);
+                const now = new Date();
+                if (endDate > now) {
+                    statusClass = 'status-confirmed'; // Green
+                    nextPaymentDisplay = `
+                        <div>${endDate.toLocaleDateString()}</div>
+                        <div style="font-size: 0.8rem; color: var(--color-text-muted);">Active</div>
+                    `;
+                } else {
+                    statusClass = 'status-cancelled'; // Red/Expired
+                    nextPaymentDisplay = `
+                        <div>${endDate.toLocaleDateString()}</div>
+                        <div style="font-size: 0.8rem; color: #ff4757;">Expired</div>
+                    `;
+                }
+            }
+        } else if (sub.status === 'pending') {
+            statusClass = 'players-badge'; // Grey/Yellowish look
+            nextPaymentDisplay = '<span style="opacity:0.5">Waiting for Payment</span>';
+        }
 
         return `
         <tr>
@@ -102,14 +123,28 @@ async function fetchMembers() {
             <td>${sub.customer_email}</td>
             <td>${sub.phone_number || '-'}</td>
             <td><span class="status-badge ${statusClass}">${sub.status}</span></td>
-            <td>
-                <div>${endDate.toLocaleDateString()}</div>
-                <div style="font-size: 0.8rem; color: var(--color-text-muted);">${isActive ? 'Active' : 'Expired'}</div>
+            <td>${nextPaymentDisplay}</td>
+            <td class="actions-cell">
+                <button class="btn-icon delete" onclick="deleteMember('${sub.id}')" title="Delete Subscription">🗑️</button>
             </td>
         </tr>
     `}).join('');
 }
 
+window.deleteMember = async (id) => {
+    if (!confirm('Are you sure you want to delete this subscription record?')) return;
+
+    const { error } = await supabase
+        .from('subscriptions')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        alert('Error: ' + error.message);
+    } else {
+        fetchMembers(); // Refresh list
+    }
+};
 
 // Auth Functions
 async function checkUser() {
