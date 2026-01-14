@@ -239,8 +239,14 @@ async function handleBookingSubmit(e) {
 
   // Final Availability Check (Optimistic Locking prevention ideally, but simple check for now)
   // We rely on the unique constraint (date, time, court_id) to prevent race conditions.
+  // Use local date components to prevent UTC shifting
+  const localDate = new Date(bookingState.date);
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const day = String(localDate.getDate()).padStart(2, '0');
+
   const bookingData = {
-    booking_date: bookingState.date.toISOString().split('T')[0],
+    booking_date: `${year}-${month}-${day}`,
     time_slot: bookingState.timeSlot,
     court_id: bookingState.assignedCourtId,
     court_type: bookingState.courtType,

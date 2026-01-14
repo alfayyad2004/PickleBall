@@ -215,7 +215,37 @@
             btn.disabled = true;
 
             try {
-                // 1. Create Pending Subscription
+                // 1. Check for Duplicate Active Subscription
+                const { data: existing, error: checkError } = await supabaseClient
+                    .from('subscriptions')
+                    .select('*')
+                    .eq('customer_email', email)
+                    .eq('status', 'active')
+                    .gt('end_date', new Date().toISOString())
+                    .single(); // Might return null or error if not found, let's checking logic
+
+                // .single() returns error if 0 rows in some versions, but returns null data in others depending on settings. 
+                // Better approach with .maybeSingle() if available (v2), but .select('*').limit(1) is safest.
+                // Re-writing query for safety:
+
+                const { data: duplicates } = await supabaseClient
+                    .from('subscriptions')
+                    .select('end_date')
+                    .eq('customer_email', email)
+                    .eq('status', 'active')
+                    .gt('end_date', new Date().toISOString())
+                    .limit(1);
+
+                if (duplicates && duplicates.length > 0) {
+                    const expiry = new Date(duplicates[0].end_date).toLocaleDateString();
+                    alert(`You are already an Active Member until ${expiry}. No need to subscribe again!`);
+
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+
+                // 2. Create Pending Subscription (If no active one found)
                 const { data, error } = await supabaseClient
                     .from('subscriptions')
                     .insert([{

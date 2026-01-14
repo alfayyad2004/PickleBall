@@ -1040,4 +1040,20 @@ footer {
     .date-picker-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    /* Mobile Success Card Optimization */
+    .success-card {
+        padding: 40px 20px;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+    }
+
+    .success-message {
+        font-size: 1rem;
+    }
 }

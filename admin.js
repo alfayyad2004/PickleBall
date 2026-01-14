@@ -233,8 +233,17 @@ function renderBookings(bookings) {
     bookingsList.innerHTML = bookings.map(booking => `
         <tr>
             <td>
-                <div style="font-weight: 700; color: var(--color-primary);">${new Date(booking.booking_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</div>
-                <div style="font-size: 0.8rem; color: var(--color-text-muted);">${new Date(booking.booking_date).getFullYear()}</div>
+                <div style="font-weight: 700; color: var(--color-primary);">
+                    ${(() => {
+            // Manual parse to avoid UTC shift
+            const [y, m, d] = booking.booking_date.split('-').map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            return dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        })()}
+                </div>
+                <div style="font-size: 0.8rem; color: var(--color-text-muted);">
+                    ${booking.booking_date.split('-')[0]}
+                </div>
             </td>
             <td>${booking.time_slot}</td>
             <td>
